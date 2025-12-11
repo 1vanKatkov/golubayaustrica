@@ -1,0 +1,897 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Новая сессия</title>
+    <style>
+      :root {
+        background: #030305;
+        color: #fff;
+        font-family: "Inter", "Segoe UI", system, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: radial-gradient(circle at top right, rgba(230, 59, 59, 0.25), transparent),
+          linear-gradient(180deg, rgba(3, 3, 5, 0.9), #000);
+      }
+
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: clamp(1.2rem, 3vw, 2.5rem);
+      }
+
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .title {
+        margin: 0;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: clamp(1.4rem, 3vw, 1.9rem);
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        background: rgba(230, 59, 59, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fff;
+        padding: 0.65rem 1.1rem;
+        border-radius: 10px;
+        cursor: pointer;
+        letter-spacing: 0.05em;
+        transition: background 0.25s ease, transform 0.15s ease;
+      }
+
+      .btn:hover {
+        background: rgba(230, 59, 59, 0.35);
+        transform: translateY(-1px);
+      }
+
+      .section {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 1rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .section h2 {
+        margin: 0 0 0.75rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        font-size: 1rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        color: #fff;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 0.55rem 0.5rem;
+        text-align: left;
+      }
+
+      th {
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.85rem;
+        color: #cbd1e2;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      .pill {
+        display: inline-block;
+        padding: 0.25rem 0.6rem;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.07);
+        font-size: 0.8rem;
+      }
+
+      .empty {
+        color: #cbd1e2;
+        text-align: center;
+        padding: 0.75rem 0;
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+
+      .modal {
+        background: #0b0c10;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 14px;
+        padding: 1rem;
+        width: min(540px, 92vw);
+        max-height: 90vh;
+        overflow: auto;
+      }
+
+      .modal h3 {
+        margin: 0 0 0.75rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .form-row {
+        margin-bottom: 0.75rem;
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      label {
+        font-size: 0.9rem;
+        color: #cbd1e2;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      select {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        padding: 0.5rem 0.65rem;
+        color: #fff;
+        min-width: 0;
+      }
+
+      /* убираем стрелочки у числовых полей */
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+      input[type="number"]::-webkit-outer-spin-button,
+      input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      .checkbox-list {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.35rem 0.75rem;
+      }
+
+      .chips {
+        display: flex;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+      }
+
+      .chip {
+        padding: 0.35rem 0.65rem;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        font-size: 0.85rem;
+      }
+
+      .mt {
+        margin-top: 0.75rem;
+      }
+
+      .flex-between {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+
+      .game-type-selector {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      .game-type-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.06);
+        transition: all 0.25s ease;
+      }
+
+      .game-type-option:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+
+      .game-type-option input[type="radio"] {
+        display: none;
+      }
+
+      .game-type-option input[type="radio"]:checked + .game-type-label {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #fff;
+      }
+
+      .game-type-label {
+        font-size: 0.9rem;
+        color: #cbd1e2;
+        transition: color 0.25s ease;
+      }
+
+      /* Кастомные чекбоксы в стиле сайта */
+      input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(230, 59, 59, 0.4);
+        border-radius: 4px;
+        background: rgba(230, 59, 59, 0.1);
+        cursor: pointer;
+        position: relative;
+        transition: all 0.25s ease;
+        vertical-align: middle;
+        margin-right: 0.5rem;
+      }
+
+      input[type="checkbox"]:hover {
+        border-color: rgba(230, 59, 59, 0.6);
+        background: rgba(230, 59, 59, 0.15);
+      }
+
+      input[type="checkbox"]:checked {
+        background: rgba(230, 59, 59, 0.3);
+        border-color: rgba(230, 59, 59, 0.8);
+      }
+
+      input[type="checkbox"]:checked::after {
+        content: "✓";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #fff;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      /* Стили для чекбоксов игроков */
+      .checkbox-list label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        padding: 0.25rem 0;
+      }
+
+      .calc-panel {
+        margin-top: 0.65rem;
+        display: none;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="header">
+        <h1 class="title">Новая сессия</h1>
+        <div class="actions">
+          <button class="btn" id="btn-create-game">Создать новую игру</button>
+          <button class="btn" id="btn-results">Результаты</button>
+          <button class="btn" id="btn-save">Сохранить</button>
+          <a class="btn" href="{% url 'landing' %}" style="text-decoration:none">Назад</a>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <div class="flex-between" style="gap:0.75rem; width:100%;">
+            <h2>Кешгейм</h2>
+            <div class="inline" style="gap:0.75rem;">
+              <label class="inline" style="font-size:0.9rem; color:#cbd1e2;">
+                <input type="checkbox" id="cash-calc-toggle" />
+                Калькулятор
+              </label>
+              <span class="pill" id="cg-count">0 игр</span>
+            </div>
+          </div>
+          <div class="calc-panel" id="cash-calc-panel">
+            <label class="inline">
+              Бай-ин:
+              <input type="number" id="cash-buyin" value="500" min="0" step="0.01" style="width:100px;" />
+            </label>
+            <label class="inline">
+              Фишек на игрока:
+              <input type="number" id="cash-chips" value="5000" min="1" step="1" style="width:110px;" />
+            </label>
+          </div>
+        </div>
+        <div id="cashgame-block">
+          <div class="empty">Пока нет игр</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <div class="flex-between" style="gap:0.75rem; width:100%;">
+            <h2>Турик</h2>
+            <div class="inline" style="gap:0.75rem;">
+              <label class="inline" style="font-size:0.9rem; color:#cbd1e2;">
+                <input type="checkbox" id="tournament-calc-toggle" />
+                Калькулятор
+              </label>
+              <span class="pill" id="t-count">0 игр</span>
+            </div>
+          </div>
+          <div class="calc-panel" id="tournament-calc-panel">
+            <label class="inline">
+              Бай-ин:
+              <input type="number" id="tournament-buyin" value="500" min="0" step="0.01" style="width:100px;" />
+            </label>
+            <label class="inline">
+              Победителей:
+              <input type="number" id="tournament-winners" value="3" min="1" max="4" step="1" style="width:80px;" />
+            </label>
+            <label class="inline">
+              Распределение (%):
+              <input type="text" id="tournament-distribution" placeholder="50,30,20" style="width:140px;" />
+            </label>
+          </div>
+        </div>
+        <div id="tournament-block">
+          <div class="empty">Пока нет игр</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="modal-game">
+      <div class="modal">
+        <h3>Создать игру</h3>
+        <div class="form-row">
+          <label>Тип игры:</label>
+          <div class="game-type-selector">
+            <label class="game-type-option">
+              <input type="radio" name="game-type" value="cash" checked />
+              <span class="game-type-label">Кешгейм</span>
+            </label>
+            <label class="game-type-option">
+              <input type="radio" name="game-type" value="tournament" />
+              <span class="game-type-label">Турнир</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Игроки:</label>
+          <div class="checkbox-list" id="players-list">
+            {% for p in players %}
+            <label><input type="checkbox" value="{{ p.id }}" /> {{ p.name }}</label>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="new-player">Добавить игрока:</label>
+          <input type="text" id="new-player" placeholder="Имя игрока" />
+          <button class="btn" id="btn-add-player">Добавить</button>
+        </div>
+        <div class="form-row" style="justify-content: flex-end; gap: 0.5rem;">
+          <button class="btn" id="btn-cancel-modal">Отмена</button>
+          <button class="btn" id="btn-apply-modal">Создать</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="modal-summary">
+      <div class="modal">
+        <h3>Результаты сессии</h3>
+        <div id="summary-body" class="chips"></div>
+        <div class="form-row" style="justify-content: flex-end; gap: 0.5rem;">
+          <button class="btn" id="btn-close-summary">Закрыть</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const playersData = {{ players_json|safe }};
+        let players = [...playersData];
+        const games = [];
+
+        const els = {
+          cash: document.getElementById("cashgame-block"),
+          tour: document.getElementById("tournament-block"),
+          cgCount: document.getElementById("cg-count"),
+          tCount: document.getElementById("t-count"),
+          modalGame: document.getElementById("modal-game"),
+          modalSummary: document.getElementById("modal-summary"),
+          playersList: document.getElementById("players-list"),
+          newPlayer: document.getElementById("new-player"),
+          summaryBody: document.getElementById("summary-body"),
+        };
+
+        let cashCalcEnabled = false;
+        let cashBuyin = 500;
+        let cashChipsPerPlayer = 5000;
+
+        let tournamentCalcEnabled = false;
+        let tournamentBuyin = 500;
+        let tournamentWinners = 3;
+        let tournamentDistribution = [50, 30, 20];
+
+        const refreshPlayersList = (preserveChecked = []) => {
+          els.playersList.innerHTML = "";
+          players.forEach((p) => {
+            const label = document.createElement("label");
+            const cb = document.createElement("input");
+            cb.type = "checkbox";
+            cb.value = p.id;
+            if (preserveChecked.includes(String(p.id))) cb.checked = true;
+            label.appendChild(cb);
+            label.append(" " + p.name);
+            els.playersList.appendChild(label);
+          });
+        };
+
+        const recalcCashResults = () => {
+          if (!cashCalcEnabled) return;
+          const rate = cashChipsPerPlayer > 0 ? cashBuyin / cashChipsPerPlayer : 0;
+          games
+            .filter((g) => g.type === "cash")
+            .forEach((g) => {
+              g.players.forEach((p) => {
+                const chipsEnd = Number(p.chips_end || 0);
+                const buyins = Number(p.buyins || 1);
+                const res = rate * chipsEnd - buyins * cashBuyin;
+                p.result = isFinite(res) ? res : 0;
+              });
+            });
+        };
+
+        const recalcTournamentResults = () => {
+          if (!tournamentCalcEnabled) return;
+          games
+            .filter((g) => g.type === "tournament")
+            .forEach((g) => {
+              const totalBuyins = g.players.reduce((sum, p) => sum + Number(p.buyins || 1), 0);
+              const totalPrize = totalBuyins * tournamentBuyin;
+
+              g.players.forEach((p) => {
+                const place = Number(p.place || 0);
+                const buyins = Number(p.buyins || 1);
+                let prize = 0;
+
+                if (place >= 1 && place <= tournamentWinners && tournamentDistribution[place - 1]) {
+                  prize = totalPrize * (tournamentDistribution[place - 1] / 100);
+                }
+
+                const res = prize - (buyins * tournamentBuyin);
+                p.result = isFinite(res) ? res : 0;
+              });
+            });
+        };
+
+        const renderTables = () => {
+          const renderForType = (type, container, counterEl) => {
+            const filtered = games.filter((g) => g.type === type);
+            counterEl.textContent = `${filtered.length} игр`;
+            if (!filtered.length) {
+              container.innerHTML = '<div class="empty">Пока нет игр</div>';
+              return;
+            }
+            container.innerHTML = "";
+            filtered.forEach((game) => {
+              const wrapper = document.createElement("div");
+              wrapper.style.marginBottom = "0.85rem";
+              const header = document.createElement("div");
+              header.className = "flex-between";
+              const title = document.createElement("span");
+              title.textContent = `Игра: ${game.type === "tournament" ? "Турик" : "Кешгейм"}`;
+              const delBtn = document.createElement("button");
+              delBtn.className = "btn";
+              delBtn.textContent = "Удалить игру";
+              delBtn.dataset.deleteGame = game.id;
+              header.append(title, delBtn);
+              const table = document.createElement("table");
+              if (type === "cash" && cashCalcEnabled) {
+                table.innerHTML = `
+                  <thead>
+                    <tr><th>Игрок</th><th>Фишек в конце</th><th>Бай-инов</th><th>Результат</th></tr>
+                  </thead>
+                  <tbody>
+                    ${game.players
+                      .map(
+                        (p) => `
+                          <tr data-game="${game.id}" data-player="${p.id}">
+                            <td>${p.name}</td>
+                            <td><input type="number" step="1" value="${p.chips_end ?? ''}" class="chips-input" style="width:120px;" /></td>
+                            <td><input type="number" step="1" value="${p.buyins ?? 1}" class="buyins-input" style="width:90px;" /></td>
+                            <td><input type="number" step="0.01" value="${p.result ?? 0}" class="result-input" style="width:120px;" readonly /></td>
+                          </tr>
+                        `
+                      )
+                      .join("")}
+                  </tbody>
+                `;
+              } else if (type === "tournament" && tournamentCalcEnabled) {
+                table.innerHTML = `
+                  <thead>
+                    <tr><th>Игрок</th><th>Место</th><th>Бай-инов</th><th>Результат</th></tr>
+                  </thead>
+                  <tbody>
+                    ${game.players
+                      .map(
+                        (p) => `
+                          <tr data-game="${game.id}" data-player="${p.id}">
+                            <td>${p.name}</td>
+                            <td><input type="number" min="0" value="${p.place ?? ''}" class="place-input" style="width:80px;" /></td>
+                            <td><input type="number" step="1" value="${p.buyins ?? 1}" class="buyins-input" style="width:90px;" /></td>
+                            <td><input type="number" step="0.01" value="${p.result ?? 0}" class="result-input" style="width:120px;" readonly /></td>
+                          </tr>
+                        `
+                      )
+                      .join("")}
+                  </tbody>
+                `;
+              } else {
+                table.innerHTML = `
+                  <thead>
+                    <tr><th>Игрок</th><th>Результат</th></tr>
+                  </thead>
+                  <tbody>
+                    ${game.players
+                      .map(
+                        (p) => `
+                          <tr data-game="${game.id}" data-player="${p.id}">
+                            <td>${p.name}</td>
+                            <td><input type="number" step="0.01" value="${p.result ?? 0}" class="result-input" style="width:120px;" /></td>
+                          </tr>
+                        `
+                      )
+                      .join("")}
+                  </tbody>
+                `;
+              }
+              wrapper.append(header, table);
+              container.appendChild(wrapper);
+            });
+          };
+
+          renderForType("cash", els.cash, els.cgCount);
+          renderForType("tournament", els.tour, els.tCount);
+        };
+
+        const openModal = (el) => (el.style.display = "flex");
+        const closeModal = (el) => (el.style.display = "none");
+        const getSelectedGameType = () => document.querySelector('input[name="game-type"]:checked')?.value || "cash";
+
+        document.getElementById("btn-create-game").addEventListener("click", () => {
+          document.querySelector('input[name="game-type"][value="cash"]').checked = true;
+          els.newPlayer.value = "";
+          openModal(els.modalGame);
+        });
+
+        document.getElementById("btn-cancel-modal").addEventListener("click", () =>
+          closeModal(els.modalGame)
+        );
+
+        document.getElementById("btn-add-player").addEventListener("click", () => {
+          const name = els.newPlayer.value.trim();
+          if (!name) return;
+          const newId = `new-${Date.now()}`;
+          const checked = Array.from(
+            els.playersList.querySelectorAll("input[type=checkbox]:checked")
+          ).map((c) => c.value);
+          players.push({ id: newId, name });
+          refreshPlayersList(checked.concat(newId));
+          els.newPlayer.value = "";
+        });
+
+        document.getElementById("btn-apply-modal").addEventListener("click", () => {
+          const selected = Array.from(
+            els.playersList.querySelectorAll("input[type=checkbox]:checked")
+          ).map((cb) => cb.value);
+          if (!selected.length) {
+            alert("Выберите хотя бы одного игрока");
+            return;
+          }
+          const chosenPlayers = selected
+            .map((id) => players.find((p) => `${p.id}` === `${id}`))
+            .filter(Boolean)
+            .map((p) => ({
+              ...p,
+              result: 0,
+              ...(cashCalcEnabled && getSelectedGameType() === "cash" ? {
+                chips_end: 0,
+                buyins: 1,
+              } : {}),
+              ...(tournamentCalcEnabled && getSelectedGameType() === "tournament" ? {
+                place: 0,
+                buyins: 1,
+              } : {}),
+            }));
+          const game = {
+            id: `g-${Date.now()}`,
+            type: getSelectedGameType() === "tournament" ? "tournament" : "cash",
+            players: chosenPlayers,
+          };
+          games.push(game);
+          renderTables();
+          closeModal(els.modalGame);
+        });
+
+        let renderTimeout;
+        const updateResults = (type) => {
+          clearTimeout(renderTimeout);
+          if (type === "cash" && cashCalcEnabled) {
+            recalcCashResults();
+            renderTables();
+          } else if (type === "tournament" && tournamentCalcEnabled) {
+            recalcTournamentResults();
+            renderTables();
+          }
+        };
+
+        document.addEventListener("input", (e) => {
+          const tr = e.target.closest("tr");
+          const gid = tr?.dataset.game;
+          const pid = tr?.dataset.player;
+          const game = games.find((g) => g.id === gid);
+          if (!game) return;
+          const player = game.players.find((p) => `${p.id}` === `${pid}`);
+          if (!player) return;
+
+          if (e.target.classList.contains("result-input") &&
+              !(cashCalcEnabled && game.type === "cash") &&
+              !(tournamentCalcEnabled && game.type === "tournament")) {
+            player.result = parseFloat(e.target.value || "0") || 0;
+          }
+
+          if (cashCalcEnabled && game.type === "cash") {
+            if (e.target.classList.contains("chips-input")) {
+              player.chips_end = parseFloat(e.target.value || "0") || 0;
+            }
+            if (e.target.classList.contains("buyins-input")) {
+              player.buyins = parseFloat(e.target.value || "1") || 1;
+            }
+            clearTimeout(renderTimeout);
+            renderTimeout = setTimeout(() => updateResults("cash"), 300);
+          }
+
+          if (tournamentCalcEnabled && game.type === "tournament") {
+            if (e.target.classList.contains("place-input")) {
+              player.place = parseInt(e.target.value || "0") || 0;
+            }
+            if (e.target.classList.contains("buyins-input")) {
+              player.buyins = parseFloat(e.target.value || "1") || 1;
+            }
+            clearTimeout(renderTimeout);
+            renderTimeout = setTimeout(() => updateResults("tournament"), 300);
+          }
+        });
+
+        document.addEventListener("blur", (e) => {
+          if (e.target.classList.contains("chips-input") ||
+              e.target.classList.contains("buyins-input") ||
+              e.target.classList.contains("place-input")) {
+            const tr = e.target.closest("tr");
+            const gid = tr?.dataset.game;
+            const game = games.find((g) => g.id === gid);
+            if (game) {
+              clearTimeout(renderTimeout);
+              updateResults(game.type);
+            }
+          }
+        });
+
+        document.addEventListener("click", (e) => {
+          const btn = e.target.closest("button[data-delete-game]");
+          if (!btn) return;
+          const gid = btn.dataset.deleteGame;
+          const idx = games.findIndex((g) => g.id === gid);
+          if (idx !== -1) {
+            games.splice(idx, 1);
+            renderTables();
+          }
+        });
+
+        document.getElementById("btn-results").addEventListener("click", () => {
+          const totals = {};
+          games.forEach((g) => {
+            g.players.forEach((p) => {
+              totals[p.name] = (totals[p.name] || 0) + (p.result || 0);
+            });
+          });
+          els.summaryBody.innerHTML = "";
+          if (!Object.keys(totals).length) {
+            els.summaryBody.innerHTML = '<div class="empty">Нет данных</div>';
+          } else {
+            Object.entries(totals).forEach(([name, sum]) => {
+              const chip = document.createElement("div");
+              chip.className = "chip";
+              chip.textContent = `${name}: ${sum >= 0 ? "+" : ""}${sum.toFixed(2)}`;
+              els.summaryBody.appendChild(chip);
+            });
+          }
+          openModal(els.modalSummary);
+        });
+
+        document.getElementById("btn-close-summary").addEventListener("click", () =>
+          closeModal(els.modalSummary)
+        );
+
+        const cashToggle = document.getElementById("cash-calc-toggle");
+        const cashPanel = document.getElementById("cash-calc-panel");
+        const buyinInput = document.getElementById("cash-buyin");
+        const chipsInput = document.getElementById("cash-chips");
+
+        const applyCashToggleUI = () => {
+          cashPanel.style.display = cashCalcEnabled ? "flex" : "none";
+        };
+
+        cashToggle.addEventListener("change", () => {
+          cashCalcEnabled = cashToggle.checked;
+          applyCashToggleUI();
+          if (cashCalcEnabled) {
+            recalcCashResults();
+          }
+          renderTables();
+        });
+
+        buyinInput.addEventListener("input", () => {
+          cashBuyin = parseFloat(buyinInput.value || "0") || 0;
+          if (cashCalcEnabled) {
+            recalcCashResults();
+            renderTables();
+          }
+        });
+
+        chipsInput.addEventListener("input", () => {
+          cashChipsPerPlayer = parseFloat(chipsInput.value || "1") || 1;
+          if (cashCalcEnabled) {
+            recalcCashResults();
+            renderTables();
+          }
+        });
+
+        const tournamentToggle = document.getElementById("tournament-calc-toggle");
+        const tournamentPanel = document.getElementById("tournament-calc-panel");
+        const tournamentBuyinInput = document.getElementById("tournament-buyin");
+        const tournamentWinnersInput = document.getElementById("tournament-winners");
+        const tournamentDistributionInput = document.getElementById("tournament-distribution");
+
+        const applyTournamentToggleUI = () => {
+          tournamentPanel.style.display = tournamentCalcEnabled ? "flex" : "none";
+        };
+
+        const parseDistribution = (str) => {
+          const parts = str.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n) && n > 0);
+          const sum = parts.reduce((a, b) => a + b, 0);
+          if (sum === 0) return [50, 30, 20];
+          return parts.map(p => p / sum * 100);
+        };
+
+        tournamentToggle.addEventListener("change", () => {
+          tournamentCalcEnabled = tournamentToggle.checked;
+          applyTournamentToggleUI();
+          if (tournamentCalcEnabled) {
+            recalcTournamentResults();
+          }
+          renderTables();
+        });
+
+        tournamentBuyinInput.addEventListener("input", () => {
+          tournamentBuyin = parseFloat(tournamentBuyinInput.value || "0") || 0;
+          if (tournamentCalcEnabled) {
+            recalcTournamentResults();
+            renderTables();
+          }
+        });
+
+        tournamentWinnersInput.addEventListener("input", () => {
+          tournamentWinners = parseInt(tournamentWinnersInput.value || "3") || 3;
+          if (tournamentCalcEnabled) {
+            recalcTournamentResults();
+            renderTables();
+          }
+        });
+
+        tournamentDistributionInput.addEventListener("input", () => {
+          tournamentDistribution = parseDistribution(tournamentDistributionInput.value);
+          if (tournamentCalcEnabled) {
+            recalcTournamentResults();
+            renderTables();
+          }
+        });
+
+        const csrfToken = "{{ csrf_token }}";
+
+        document.getElementById("btn-save").addEventListener("click", async () => {
+          const password = prompt("Введите админский пароль для сохранения:");
+          if (password !== "admin1234") {
+            alert("Неверный пароль. Сохранение отменено.");
+            return;
+          }
+
+          const payload = {
+            password,
+            games: games.map((g) => ({
+              id: g.id,
+              type: g.type,
+              players: g.players.map((p) => ({
+                id: p.id,
+                name: p.name,
+                result: p.result || 0,
+              })),
+            })),
+          };
+
+          try {
+            const resp = await fetch("{% url 'new_session' %}", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken,
+              },
+              body: JSON.stringify(payload),
+            });
+            if (!resp.ok) {
+              const text = await resp.text();
+              throw new Error(text || `Ошибка: ${resp.status}`);
+            }
+            const data = await resp.json();
+            alert(`Сессия сохранена в истории. ID: ${data.session_id}`);
+          } catch (err) {
+            alert(`Не удалось сохранить: ${err.message}`);
+          }
+        });
+
+        refreshPlayersList();
+        applyCashToggleUI();
+        applyTournamentToggleUI();
+        renderTables();
+      });
+    </script>
+  </body>
+</html>
+

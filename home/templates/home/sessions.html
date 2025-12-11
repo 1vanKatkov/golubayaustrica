@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>История игр</title>
+    <style>
+      :root {
+        color: #fff;
+        background: #030305;
+        font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+        --red: #e63b3b;
+        --mid-gray: #1c1f29;
+        --light-gray: #cfd2dd;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #030305;
+      }
+
+      .page {
+        padding: 3rem clamp(1rem, 3vw, 4rem) 4rem;
+        min-height: 100vh;
+        background: radial-gradient(circle at top right, rgba(230, 59, 59, 0.25), transparent),
+          linear-gradient(180deg, rgba(3, 3, 5, 0.9), #000);
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: clamp(2rem, 3vw, 2.8rem);
+      }
+
+      .hero-button {
+        padding: 0.65rem 1.5rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        background: rgba(230, 59, 59, 0.25);
+        color: #fff;
+        font-size: 0.7rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: background 0.3s ease;
+      }
+
+      .helper-text {
+        margin: 0 0 1rem;
+        color: var(--light-gray);
+        font-size: 0.85rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      .session-link {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .session-link:hover {
+        color: var(--red);
+      }
+
+      .hero-button:hover {
+        background: var(--red);
+      }
+
+      .sessions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-top: 1.5rem;
+      }
+
+      .session-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        padding: 1.6rem;
+        text-align: center;
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.4);
+      }
+
+      .session-date {
+        margin: 0 0 1rem;
+        color: var(--light-gray);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+      }
+
+      .session-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        background: rgba(255, 255, 255, 0.02);
+        transition: transform 0.25s ease, border-color 0.25s ease;
+      }
+
+      .session-btn:hover {
+        transform: translateY(-4px);
+        border-color: var(--red);
+      }
+
+      .empty-state {
+        grid-column: 1 / -1;
+        padding: 1rem;
+        text-align: center;
+        color: var(--light-gray);
+        border: 1px dashed rgba(255, 255, 255, 0.3);
+        border-radius: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <h1>История игр</h1>
+        <a class="hero-button" href="{% url 'landing' %}">На главную</a>
+      </header>
+      <p class="helper-text">
+        Кнопка ведёт на страницу результатов сессии.
+      </p>
+      <div class="sessions-grid">
+        {% for session in sessions %}
+        <article class="session-card">
+          <p class="session-date">{{ session.date|date:"d.m.Y" }}</p>
+          <a class="session-btn" href="{% url 'session_detail' session.id %}">
+            Сессия {{ session.id }}
+          </a>
+        </article>
+        {% empty %}
+        <div class="empty-state">Сессий еще нет.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>
+

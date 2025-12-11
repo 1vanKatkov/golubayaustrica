@@ -1,0 +1,371 @@
+{% load static format_filters %}
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Клуб Покер 24/7 — Зал славы</title>
+    <style>
+      :root {
+        background: #030305;
+        color: #fff;
+        font-family: "Inter", "Segoe UI", system, sans-serif;
+        --red: #e63b3b;
+        --dark-gray: #04050a;
+        --mid-gray: #1a1d25;
+        --light-gray: #cbd1e2;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #030305;
+      }
+
+      .page {
+        min-height: 100vh;
+        background: radial-gradient(circle at top right, rgba(230, 59, 59, 0.25), transparent),
+          linear-gradient(180deg, rgba(3, 3, 5, 0.9), #000);
+        padding-bottom: 4rem;
+      }
+
+      .hero {
+        padding: clamp(1.5rem, 3vw, 3rem);
+      }
+
+      .hero-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 1rem;
+      }
+
+      .hero-button {
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        padding: 0.65rem 1.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3em;
+        font-size: 0.65rem;
+        color: #fff;
+        background: rgba(230, 59, 59, 0.24);
+        text-decoration: none;
+        transition: background 0.3s ease;
+      }
+
+      .hero-button:hover {
+        background: var(--red);
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.2rem, 4vw, 3rem);
+        margin: 1.25rem 0 0.25rem;
+        text-align: center;
+        letter-spacing: 0.35em;
+        font-family: "Cinzel Decorative", "Playfair Display", serif;
+        line-height: 1.3;
+        text-transform: uppercase;
+        color: #fff;
+      }
+
+      .hero h1 span {
+        display: block;
+        letter-spacing: 0.25em;
+      }
+
+      .quote {
+        margin: 1.25rem auto 0;
+        max-width: 720px;
+        text-align: center;
+        font-style: italic;
+        font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+        color: #fff;
+        letter-spacing: 0.2em;
+        font-family: "Cormorant Garamond", "Playfair Display", "Times New Roman", serif;
+        line-height: 1.4;
+        text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 150px;
+        text-transform: none;
+        padding: 0 1rem;
+      }
+
+      .slider-title {
+        text-align: center;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        margin: 2rem 0 1rem;
+        font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+      }
+
+      .slider-shell {
+        margin: 0 auto 0;
+        padding: 0 clamp(1rem, 5vw, 4rem);
+      }
+
+      .slider-window {
+        position: relative;
+        overflow: hidden;
+        padding: 0.75rem 0;
+      }
+
+      .slider-track {
+        display: flex;
+        gap: 1.5rem;
+        transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+      }
+
+      .slider-card {
+        flex: 0 0 clamp(240px, 32vw, 320px);
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 1.5rem 1.5rem 3.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+        opacity: 0.5;
+        transform: scale(0.94);
+        transition: transform 0.35s ease, opacity 0.35s ease;
+        position: relative;
+        min-height: clamp(320px, 52vw, 430px);
+      }
+
+      .slider-card.active {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .slider-card img {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+
+      .slider-card h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+      }
+
+      .slider-card p {
+        margin: 0;
+        color: var(--light-gray);
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      .total-pill {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 0.75rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        font-size: 0.95rem;
+        border: 1px solid transparent;
+      }
+
+      .total-positive {
+        color: #2de08a;
+        background: rgba(45, 224, 138, 0.12);
+        border-color: rgba(45, 224, 138, 0.35);
+      }
+
+      .total-negative {
+        color: #ff6b6b;
+        background: rgba(255, 107, 107, 0.12);
+        border-color: rgba(255, 107, 107, 0.35);
+      }
+
+      .slider-empty {
+        width: 100%;
+        padding: 2rem 1rem;
+        color: var(--light-gray);
+        text-align: center;
+      }
+
+      .slider-nav {
+        margin-top: 1.25rem;
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      .slider-nav button {
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        background: transparent;
+        color: #fff;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .slider-nav button:hover {
+        background: rgba(230, 59, 59, 0.3);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div class="hero-header">
+          <a class="hero-button hero-new-session" href="{% url 'new_session' %}">Новая сессия</a>
+          <div class="hero-buttons">
+            <a class="hero-button" href="{% url 'hall_of_fame' %}">Все игроки</a>
+            <a class="hero-button" href="{% url 'top_players' %}">Топ игроков</a>
+            <a class="hero-button" href="{% url 'sessions' %}">История игр</a>
+          </div>
+        </div>
+        <h1>
+          <span>Покерный клуб</span>
+          <span>«Голубая Устрица»</span>
+        </h1>
+      </header>
+      <section class="slider-shell">
+        <h2 class="slider-title">Зал славы</h2>
+        <div class="slider-window">
+          <div class="slider-track" id="slider-track">
+            {% for player in slider_players %}
+            <article class="slider-card">
+              <img src="{% static 'photo/' %}{{ player.photo_filename }}" alt="Фото {{ player.name }}" />
+              <h3>{{ player.name }}</h3>
+              <p>{{ player.description|default:"Описания пока нет." }}</p>
+              {% with total=player.total %}
+              {% if total|has_negative %}
+              <div class="total-pill total-negative">{{ total|format_with_sign }}</div>
+              {% else %}
+              <div class="total-pill total-positive">
+                {% if total|has_positive %}
+                  {{ total|format_with_sign }}
+                {% else %}
+                  +0
+                {% endif %}
+              </div>
+              {% endif %}
+              {% endwith %}
+            </article>
+            {% empty %}
+            <div class="slider-empty">Игроков пока нет.</div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="slider-nav">
+          <button type="button" class="slider-prev" aria-label="Назад">←</button>
+          <button type="button" class="slider-next" aria-label="Вперёд">→</button>
+        </div>
+      </section>
+      <div>
+        <p class="quote">
+          «Если за полчаса за столом ты не понял, кто здесь лох — значит, это ты» —
+          Амарилло Слиму
+        </p>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const centerPlayerIndex = {{ center_player_index|default:"null" }};
+        const track = document.getElementById("slider-track");
+        const prev = document.querySelector(".slider-prev");
+        const next = document.querySelector(".slider-next");
+        const originals = Array.from(track.querySelectorAll(".slider-card"));
+
+        if (!originals.length) {
+          prev.disabled = next.disabled = true;
+          return;
+        }
+
+        let cards = originals;
+        if (originals.length > 1) {
+          const fragment = document.createDocumentFragment();
+          const before = originals.map((c) => c.cloneNode(true));
+          const after = originals.map((c) => c.cloneNode(true));
+          [...before, ...originals, ...after].forEach((c) => fragment.appendChild(c));
+          track.innerHTML = "";
+          track.appendChild(fragment);
+          cards = Array.from(track.querySelectorAll(".slider-card"));
+        }
+
+        const baseLen = originals.length;
+        let currentIndex = baseLen + (centerPlayerIndex !== null ? centerPlayerIndex : 0); // центрируем на игроке "Ваня К" или на первой карточке
+        const baseTransition =
+          getComputedStyle(track).transition ||
+          "transform 0.45s cubic-bezier(0.4, 0, 0.2, 1)";
+
+        const applyActive = () => {
+          cards.forEach((c, idx) => c.classList.toggle("active", idx === currentIndex));
+        };
+
+        const recalcTransform = () => {
+          const containerWidth = track.parentElement.clientWidth;
+          const cardWidth = cards[0].offsetWidth;
+          const gap = parseFloat(getComputedStyle(track).gap) || 24;
+          const step = cardWidth + gap;
+          const offset = currentIndex * step - (containerWidth - cardWidth) / 2;
+          track.style.transform = `translateX(-${offset}px)`;
+          applyActive();
+        };
+
+        const jumpWithoutAnimation = (newIndex) => {
+          track.style.transition = "none";
+          currentIndex = newIndex;
+          recalcTransform();
+          void track.offsetWidth; // force reflow
+          track.style.transition = baseTransition;
+        };
+
+        const goToPrev = () => {
+          if (cards.length === 1) return;
+          currentIndex -= 1;
+          recalcTransform();
+        };
+
+        const goToNext = () => {
+          if (cards.length === 1) return;
+          currentIndex += 1;
+          recalcTransform();
+        };
+
+        track.addEventListener("transitionend", () => {
+          if (cards.length <= baseLen) return;
+          if (currentIndex < baseLen) {
+            jumpWithoutAnimation(currentIndex + baseLen);
+          } else if (currentIndex >= baseLen * 2) {
+            jumpWithoutAnimation(currentIndex - baseLen);
+          }
+        });
+
+        prev.addEventListener("click", goToPrev);
+        next.addEventListener("click", goToNext);
+        window.addEventListener("resize", recalcTransform);
+
+        recalcTransform();
+      });
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,7 @@
+# Django settings
+SECRET_KEY=your-secret-key-here
+DEBUG=False
+ALLOWED_HOSTS=your-app-name.railway.app,your-app-name.onrender.com
+
+# Database (for production, will use PostgreSQL)
+DATABASE_URL=postgresql://user:password@host:port/database
