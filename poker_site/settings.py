@@ -9,7 +9,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-PLACEHOLDER-CHANGE-ME
 
 DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',') if os.environ.get('ALLOWED_HOSTS') else []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',') if os.environ.get('ALLOWED_HOSTS') else ['*']
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -54,8 +54,12 @@ WSGI_APPLICATION = "poker_site.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get('DB_NAME', 'poker_db'),
+        "USER": os.environ.get('DB_USER', 'postgres'),
+        "PASSWORD": os.environ.get('DB_PASSWORD', ''),
+        "HOST": os.environ.get('DB_HOST', 'localhost'),
+        "PORT": os.environ.get('DB_PORT', '5432'),
     }
 }
 
